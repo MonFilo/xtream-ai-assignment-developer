@@ -71,8 +71,14 @@ Observability is key. Save every request and response made to the APIs to a **pr
 🦎 🦫
 
 ### Challenge 1 - 2
+**NOTE**
+#### New Models
+If you want to add a new model to the pipeline, you will need to specify its data preparation pipeline in the file '\data\custom_dataprep.py', and also add it 'config.py' following the instructions in the file.
+#### New evaluation metrics
+If you want to add new evaluation metrics, just drop them in the 'METRICS' dictionary in config.py, after importing them from the sklearn library.
 
-Run challenge1.py from the terminal using the following command:
+#### Fitting and Testing a model
+You can train/fit a model and test it using train_test.py from the terminal with the following command:
 ```console
 python challenge.py input_file output_dir {linear,ridge,lasso, xgboost} [--debug] [-h]
 ```
@@ -90,6 +96,7 @@ python .\challenge\challenge1.py .\data\diamonds.csv .\data\saved_models\ linear
 ```
 and it will be saved in the directory '\\saved_models\\'.
 
+#### Loading a model
 You can also load a saved model to test it further or see the performance it obtained. This is done using pickle to load the model.
 
 There is an example of this in the file 'load_example.py', which can be called from the terminal using the following command:
@@ -107,6 +114,8 @@ python .\challenge\load_example.py .\data\saved_models\LinearRegressionModel.pkl
 ```
 This will load the trained model in-code (it can be modified to actually use the model further), and it will print the saved testing results.
 
-**NOTE**
+#### Hyper-parameter optimization
+If you want to find the best hyper-parameters for a specific model, you need to define the dictionary of parameters in config.py (if not already there), and then run tune_hyper.pr from the terminal using:
+```console
+```
 
-If you wish to add a new model to the pipeline, you will need to specify its data preparation pipeline in the file '\data\custom_dataprep.py', and also add it 'config.py'.

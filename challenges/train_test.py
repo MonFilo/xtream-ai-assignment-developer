@@ -2,10 +2,9 @@ import os
 from pathlib import Path
 import pickle
 from argparse import ArgumentParser
-from sklearn.model_selection import train_test_split
 
 from config import *
-from data import load_data, prepare_data
+from data import load_data
 from models import RegressionModel
 
 def main():
@@ -18,16 +17,13 @@ def main():
 
     # load data
     data = load_data(input_file, debug)
-    X, y = dataprep_f(data)
-
-    # split dataset into training and testing
-    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = TRAIN_SPLIT, random_state = SEED)
+    # prepare data for specific model and split it into training and testing
+    X_train, X_test, y_train, y_test = dataprep_f(data, train_size = TRAIN_SPLIT, random_state = SEED)
 
     # train model
     trained_model = model.train((X_train, y_train))
 
     # test model
-
     metrics = trained_model.test((X_test, y_test), METRICS)
 
     # print results

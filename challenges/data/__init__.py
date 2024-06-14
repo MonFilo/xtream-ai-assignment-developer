@@ -4,5 +4,7 @@ from ._load_data import (
 
 from .custom_dataprep import (
     dataprep_linear,
+    dataprep_ridge,
+    dataprep_lasso,
     dataprep_xgboost,
 )

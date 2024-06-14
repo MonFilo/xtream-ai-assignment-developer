@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 # custom class for linear models
 class RegressionModel():
@@ -54,6 +55,11 @@ class RegressionModel():
         """
         X, y = data
         preds = self.model.predict(X)
+
+        # bad work-around
+        if self.name in ['LinearRegression', 'Ridge', 'XGBRegressor']:
+            preds = np.exp(preds)
+
         scores = {}
         for key, value in evaluations.items():
             scores[key] = f'{value(y, preds)}'
