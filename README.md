@@ -70,11 +70,11 @@ Observability is key. Save every request and response made to the APIs to a **pr
 ## How to run
 🦎 🦫
 
-### Challenge 1
+### Challenge 1 - 2
 
 Run challenge1.py from the terminal using the following command:
 ```console
-python challenge.py input_file output_dir {linear,ridge,lasso} [--debug] [-h]
+python challenge.py input_file output_dir {linear,ridge,lasso, xgboost} [--debug] [-h]
 ```
 
 where:
@@ -107,4 +107,6 @@ python .\challenge\load_example.py .\data\saved_models\LinearRegressionModel.pkl
 ```
 This will load the trained model in-code (it can be modified to actually use the model further), and it will print the saved testing results.
 
-### Challenge 2
+**NOTE**
+
+If you wish to add a new model to the pipeline, you will need to specify its data preparation pipeline in the file '\data\custom_dataprep.py', and also add it 'config.py'.

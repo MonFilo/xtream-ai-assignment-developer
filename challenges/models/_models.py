@@ -1,5 +1,7 @@
+import pandas as pd
+
 # custom class for linear models
-class MyLinearModel():
+class RegressionModel():
     """
     Custom class for running linear models
 
@@ -58,15 +60,16 @@ class MyLinearModel():
     
         return scores
     
-    def predict(self, data):
+    def predict(self, data:pd.DataFrame):
         """
         Method to make predictions with model on given data
 
         Parameters:
-            - data (array): data to predict
+            - data (pandas DataFrame): data to predict
 
         Returns:
             - array:    predicitons of the model
         """
         X = data
         return self.model.predict(X)
+    

@@ -1,3 +1,3 @@
 from ._models import(
-    MyLinearModel,
+    RegressionModel,
 )

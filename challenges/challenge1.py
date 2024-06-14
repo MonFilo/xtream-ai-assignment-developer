@@ -2,33 +2,33 @@ import os
 from pathlib import Path
 import pickle
 from argparse import ArgumentParser
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
-from sklearn.metrics import r2_score, mean_absolute_error
+from sklearn.model_selection import train_test_split
 
 from config import *
-from data import load_data, split
-from models import MyLinearModel
+from data import load_data, prepare_data
+from models import RegressionModel
 
 def main():
     # parse arguments
-    input_file, output_dir, base_model, debug = _parse_args()
-    X, y = load_data(input_file, debug)
+    input_file, output_dir, model_dict, debug = _parse_args()
+    model, dataprep_f = model_dict
+
+    # define model
+    model = RegressionModel(model)
+
+    # load data
+    data = load_data(input_file, debug)
+    X, y = dataprep_f(data)
 
     # split dataset into training and testing
-    X_train, X_test, y_train, y_test = split(X, y, train_size = TRAIN_SPLIT, random_state = SEED)
-
-    # load model
-    model = MyLinearModel(base_model)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, train_size = TRAIN_SPLIT, random_state = SEED)
 
     # train model
     trained_model = model.train((X_train, y_train))
 
     # test model
-    evals = {
-            'r2': r2_score,
-            'mae':  mean_absolute_error
-        }
-    metrics = trained_model.test((X_test, y_test), evals)
+
+    metrics = trained_model.test((X_test, y_test), METRICS)
 
     # print results
     print(f'Results for {model.name}')
@@ -53,15 +53,9 @@ def _parse_args():
     parser = ArgumentParser(description = 'main file for challenge 1')
     parser.add_argument('input_file', type = str, help = 'file path to diamonds.csv dataset')
     parser.add_argument('output_dir', type = str, help = 'output directory to save model')
-    parser.add_argument('model', choices = ['linear', 'ridge', 'lasso'], help = 'linear model to use')
+    parser.add_argument('model', choices = list(ARGS_DICT.keys()), help = 'linear model to use')
     parser.add_argument('--debug', action = 'store_true', help = 'enable debug mode')
     args = parser.parse_args()
-
-    models_dict = {
-        'linear': LinearRegression(),
-        'ridge':  Ridge(),
-        'lasso':  Lasso(),
-    }
 
     if not os.path.isfile(args.input_file): 
         raise FileNotFoundError(f'File {args.input_file} does not exist.')
@@ -69,7 +63,7 @@ def _parse_args():
     if not os.path.isdir(args.output_dir):
         raise FileNotFoundError(f'The nasty error! Directory {args.output_dir} does not exist. Please create one before passing it to the program.')
 
-    return Path(args.input_file), Path(args.output_dir), models_dict[args.model], args.debug
+    return Path(args.input_file), Path(args.output_dir), ARGS_DICT[args.model], args.debug
 
 if __name__ == '__main__':
     main()
