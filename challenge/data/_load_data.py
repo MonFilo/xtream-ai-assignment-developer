@@ -2,7 +2,7 @@ import pandas as pd
 from pathlib import Path
 from sklearn.model_selection import train_test_split
 
-def load_data(file_path:Path):
+def load_data(file_path:Path, debug:bool = False):
     """
     Reads the data in file_path and returns is as pandas dataframe.
 
@@ -10,6 +10,7 @@ def load_data(file_path:Path):
 
     Parameters:
         - file_path (pathlib.Path): file path to diamonds.csv
+        - debug (bool) (optional):  enable debug mode (default is False)
 
     Returns:
         - dataframe (X):    dataframe of covariates
@@ -21,10 +22,12 @@ def load_data(file_path:Path):
 
     # read file into pandas dataframe
     data = pd.read_csv(file_path, header = 0)
+    in_len = len(data)
 
     # remove NAs and price errors (if present)
     data = data.dropna(axis = 0)
     data = data[(data['x'] * data['y'] * data['z'] != 0) & (data['price'] > 0)]
+    if debug: print(f'Removed {in_len - len(data)} points from the dataset due to missing or incorrect values.')
 
     # remove unecessary covariates
     data = data.drop(columns = ['depth', 'table', 'y', 'z'])
@@ -57,10 +60,3 @@ def split(X:pd.DataFrame, y:pd.DataFrame, **kwargs):
         - dataframe (y_test):    dataframe of response for testing
     """
     return train_test_split(X, y, **kwargs)
-
-if __name__ == '__main__':
-    current_dir = Path(__file__).parent
-    parent_dir = current_dir.parents[1]
-    csv_file_path = parent_dir / 'data' / 'diamonds.csv'  # Construct the path to the CSV file
-    X, y = load_data(csv_file_path)
-    X_train, X_test, y_train, y_test = split(X, y, train_size = 0.8, random_state = 48)
