@@ -69,4 +69,42 @@ Observability is key. Save every request and response made to the APIs to a **pr
 
 ## How to run
 🦎 🦫
-Please fill this section as part of the assignment.
+
+### Challenge 1
+
+Run challenge1.py from the terminal using the following command:
+```console
+python challenge.py input_file output_dir {linear,ridge,lasso} [--debug] [-h]
+```
+
+where:
+- input_file is the location of diamonds.csv (yes this only works for that specific file)
+- output_dir is the directory used to saved the models (create the dir beforehand or a nasty error will appear!)
+- {linear,ridge,lasso} are the linear model types (choose one of them)
+- [--debug] is an optional parameter, to enable debug mode and get some extra prints
+- [-h] to get this help section in the terminal
+
+for example, we can train the linear model with 
+```console
+python .\challenge\challenge1.py .\data\diamonds.csv .\data\saved_models\ linear --debug
+```
+and it will be saved in the directory '\\saved_models\\'.
+
+You can also load a saved model to test it further or see the performance it obtained. This is done using pickle to load the model.
+
+There is an example of this in the file 'load_example.py', which can be called from the terminal using the following command:
+```console
+python load_example.py model_to_load [--debug] [-h]
+```
+where:
+- model_to_load is the .pkl file to load
+- [--debug] is an optional parameter, to enable debug mode and get some extra prints
+- [-h] to get this help section in the terminal
+
+for example, we can load the linear model with
+```console
+python .\challenge\load_example.py .\data\saved_models\LinearRegressionModel.pkl --debug
+```
+This will load the trained model in-code (it can be modified to actually use the model further), and it will print the saved testing results.
+
+### Challenge 2

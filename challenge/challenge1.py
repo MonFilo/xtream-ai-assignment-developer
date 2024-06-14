@@ -31,10 +31,9 @@ def main():
     metrics = trained_model.test((X_test, y_test), evals)
 
     # print results
-    if debug:
-        print(f'Results for {model.name}')
-        for k, v in metrics.items():
-            print(f'\t{k}:\t{v}')
+    print(f'Results for {model.name}')
+    for k, v in metrics.items():
+        print(f'\t{k}:\t{v}')
 
     # create dict for saving model and relative performance metrics
     model_dict = {
@@ -68,7 +67,7 @@ def _parse_args():
         raise FileNotFoundError(f'File {args.input_file} does not exist.')
     
     if not os.path.isdir(args.output_dir):
-        raise FileNotFoundError(f'Directory {args.output_dir} does not exist. Please create one before passing it to the program.')
+        raise FileNotFoundError(f'The nasty error! Directory {args.output_dir} does not exist. Please create one before passing it to the program.')
 
     return Path(args.input_file), Path(args.output_dir), models_dict[args.model], args.debug
 
