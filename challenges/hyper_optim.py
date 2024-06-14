@@ -10,17 +10,20 @@ from data import load_data
 
 from xgboost import XGBRegressor
 
-def main():
+def hyper_optim():
     # parse arguments
     input_file, output_dir, model_dict, n_trials, debug = _parse_args()
-    model_name, model, _, dataprep_f, log_transform, hyper = model_dict
+    model_name, regressor, params, dataprep_f, log_transform, hyper = model_dict
+
+    if not hyper:
+        raise RuntimeError('This model has no hyper-parameters to tune. Please provide them in file config.py')
 
     def objective(trial: optuna.trial.Trial):
         # Load model hyperparameters
         model_params = {key: value(trial) if callable(value) else value for key, value in hyper.items()}
 
         # load model with chosen hyperparameters
-        model = XGBRegressor(**model_params)
+        model = regressor(**model_params)
 
         # load data
         data = load_data(input_file, debug = False)
@@ -39,10 +42,14 @@ def main():
 
     study = optuna.create_study(direction='minimize', study_name='Diamonds XGBoost')
     study.optimize(objective, n_trials = n_trials)
-    print("Best hyperparameters: ", study.best_params)
+    best_params = study.best_params
+    best_params.update(params)
+    print(f'Best hyperparameters for {model_name}')
+    for key, value in best_params.items():
+        print(f'\t{key}:\t{value}')
 
     # define model with best hyper-parameters
-    model = XGBRegressor(**study.best_params, enable_categorical = True, random_state = SEED)
+    model = regressor(**best_params)
     # load data
     data = load_data(input_file, debug = False)
     X_train, X_test, y_train, y_test = dataprep_f(data, train_size = TRAIN_SPLIT, random_state = SEED)
@@ -60,13 +67,14 @@ def main():
 
     # create dict for saving model and relative performance metrics
     model_dict = {
-        'name':     model_name,
-        'model':    model,
-        'scores':   scores
+        'name':         model_name,
+        'model':        model,
+        'hyperparams':  best_params,
+        'scores':       scores
     }
 
     # save model dict
-    output_file = output_dir / f"{model_name}{scores['mae']:.2f}$.pkl"
+    output_file = output_dir / f"{model_name}{scores['mae']:.2f}.pkl"
     with open(output_file, 'wb') as file:
         pickle.dump(model_dict, file)
     if debug: print(f'Saved model dict to {output_file}')
@@ -90,4 +98,4 @@ def _parse_args():
     return Path(args.input_file), Path(args.output_dir), ARGS_DICT[args.model], args.n_trials, args.debug
 
 if __name__ == '__main__':
-    main()
+    hyper_optim()

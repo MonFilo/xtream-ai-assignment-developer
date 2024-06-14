@@ -7,7 +7,7 @@ import numpy as np
 from config import *
 from data import load_data
 
-def main():
+def train_test():
     # parse arguments
     input_file, output_dir, model_dict, debug = _parse_args()
     model_name, model, model_params, dataprep_f, log_transform, _ = model_dict
@@ -42,7 +42,7 @@ def main():
     }
 
     # save model dict
-    output_file = output_dir / f"{model_name}{scores['mae']:.2f}$.pkl"
+    output_file = output_dir / f"{model_name}{scores['mae']:.2f}.pkl"
     with open(output_file, 'wb') as file:
         pickle.dump(model_dict, file)
     if debug: print(f'Saved model dict to {output_file}')
@@ -65,4 +65,4 @@ def _parse_args():
     return Path(args.input_file), Path(args.output_dir), ARGS_DICT[args.model], args.debug
 
 if __name__ == '__main__':
-    main()
+    train_test()

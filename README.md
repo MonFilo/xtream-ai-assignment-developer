@@ -102,7 +102,11 @@ for example, we can train a linear model with
 ```console
 python .\challenges\train_test.py .\data\diamonds.csv .\data\saved_models\ linear --debug
 ```
-and it will be saved in the directory '\\saved_models\\'. Performance metrics will also be printed and saved alongside the model.
+and it will be saved in the directory '\\saved_models\\'. The saved file is a dictionary containing:
+- 'name':           the model name (str)
+- 'model':          the trained model
+- 'hyperparams':    the hyperparameters used to train the model
+- 'scores':         dictionary containing performance metrics
 
 ### Loading a model
 You can also load a saved model to test it further or see the performance it obtained. This is done using pickle.

@@ -20,7 +20,7 @@ def load_data(file_path:Path, debug:bool = False):
     # assert that file has correct extension
     assert file_path.suffix in ['.csv', '.txt']
 
-    # read file into pandas dataframe
+    # load file into pandas dataframe
     data = pd.read_csv(file_path, header = 0)
     in_len = len(data)
 
