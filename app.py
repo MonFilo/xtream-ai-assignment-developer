@@ -7,6 +7,11 @@ from sklearn.neighbors import NearestNeighbors
 
 from challenges.data import load_data
 
+
+from xgboost import XGBRegressor
+
+
+
 app = Flask(__name__)
 
 # Load trained model
@@ -27,16 +32,16 @@ training_data = load_data(input_file)    # TODO: only load training dataset
 def predict():
     data = request.get_json()
     features = np.array([[
-        data['carat'],
+        float(data['carat']),
         data['cut'],
         data['color'],
         data['clarity'],
-        data['depth'],
-        data['table'],
-        data['x'],
-        data['y'],
-        data['z']
-    ]], dtype = object)
+        float(data['depth']),
+        float(data['table']),
+        float(data['x']),
+        float(data['y']),
+        float(data['z'])
+    ]])
 
     df = pd.DataFrame(features, columns = ['carat', 'cut', 'color', 'clarity', 'depth', 'table', 'x', 'y', 'z'])
 

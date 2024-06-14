@@ -34,7 +34,7 @@ ARGS_DICT = {
              dataprep_ridge,        # dataprep function
              True,                  # log transformation
              {                      # hyperparameters to optimize
-                 'alpha': lambda trial: trial.suggest_categorical('alpha', [0.1, 0.3, 0.5, 0.7, 1.0, 2, 4, 8, 16, 32])
+                 'alpha': lambda trial: trial.suggest_float('alpha', 0.0, 5.0, step=0.1)
              }],
 
         'lasso':                    # command line arg
@@ -44,7 +44,7 @@ ARGS_DICT = {
              dataprep_lasso,        # dataprep function
              False,                 # log transformation
              {                      # hyperparameters to optimize
-                 'alpha': lambda trial: trial.suggest_categorical('alpha', [0.1, 0.3, 0.5, 0.7, 1.0, 2, 4, 8, 16, 32])
+                 'alpha': lambda trial: trial.suggest_float('alpha', 0.0, 5.0, step=0.1)
              }],
 
         'xgboost':                                                  # command line arg
