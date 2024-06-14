@@ -1,3 +1,4 @@
 from ._load_data import (
-    load_data
+    load_data,
+    split
 )

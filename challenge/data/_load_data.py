@@ -4,7 +4,9 @@ from sklearn.model_selection import train_test_split
 
 def load_data(file_path:Path):
     """
-    Reads the data in file_path and returns is as pandas dataframe
+    Reads the data in file_path and returns is as pandas dataframe.
+
+    NOTE: this only works for the provided 'diamonds' dataset.
 
     Parameters:
         - file_path (pathlib.Path): file path to diamonds.csv
@@ -20,13 +22,24 @@ def load_data(file_path:Path):
     # read file into pandas dataframe
     data = pd.read_csv(file_path, header = 0)
 
+    # remove NAs and price errors (if present)
+    data = data.dropna(axis = 0)
+    data = data[(data['x'] * data['y'] * data['z'] != 0) & (data['price'] > 0)]
+
+    # remove unecessary covariates
+    data = data.drop(columns = ['depth', 'table', 'y', 'z'])
+
+    # create dummy variables
+    data = pd.get_dummies(data, columns = ['cut', 'color', 'clarity'], drop_first=True)
+
     # load covariates
-    X = data.drop(columns = 'price', axis = 1)
+    X = data.drop(columns = 'price')
 
     # load response
     y = data['price']
 
     return X, y
+
 
 def split(X:pd.DataFrame, y:pd.DataFrame, **kwargs):
     """
@@ -51,4 +64,3 @@ if __name__ == '__main__':
     csv_file_path = parent_dir / 'data' / 'diamonds.csv'  # Construct the path to the CSV file
     X, y = load_data(csv_file_path)
     X_train, X_test, y_train, y_test = split(X, y, train_size = 0.8, random_state = 48)
-    print(y_test)
