@@ -1,6 +1,7 @@
 class MyLinearModel():
     def __init__(self, model):
         self.model = model
+        self.name = model.__class__.__name__
 
     def train(self, data:tuple):
         X, y = data
@@ -33,7 +34,7 @@ if __name__ == '__main__':
         'r2': r2_score,
         'mae':  mean_absolute_error
     }
-    
+
     scores = trained_model.test(([[1,4]], [4]), evals)
     for key, value in scores.items():
         print(f'{key}:\t{value}')

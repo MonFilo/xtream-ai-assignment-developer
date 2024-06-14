@@ -25,4 +25,9 @@ evals = {
         'r2': r2_score,
         'mae':  mean_absolute_error
     }
-scores = trained_model.test(([[1,4]], [4]), evals)
+scores = trained_model.test((X_test, y_test), evals)
+
+# print results
+print(f'Results for {model.name}')
+for k, v in scores.items():
+    print(f'{k}:\t{v}')
