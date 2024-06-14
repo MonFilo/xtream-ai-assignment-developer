@@ -6,7 +6,6 @@ import optuna
 
 from config import *
 from data import load_data
-from models import RegressionModel
 
 from xgboost import XGBRegressor
 from sklearn.metrics import mean_squared_error
