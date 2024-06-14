@@ -5,15 +5,12 @@ from argparse import ArgumentParser
 
 from config import *
 from data import load_data
-from models import RegressionModel
 
 def main():
     # parse arguments
     input_file, output_dir, model_dict, debug = _parse_args()
-    model, dataprep_f = model_dict
-
-    # define model
-    model = RegressionModel(model)
+    model, dataprep_f, _ = model_dict
+    model_name = model.__class__.__name__
 
     # load data
     data = load_data(input_file, debug)
@@ -21,25 +18,30 @@ def main():
     X_train, X_test, y_train, y_test = dataprep_f(data, train_size = TRAIN_SPLIT, random_state = SEED)
 
     # train model
-    trained_model = model.train((X_train, y_train))
+    # trained_model = model.train((X_train, y_train))
+    model.fit(X_train, y_train)
 
     # test model
-    metrics = trained_model.test((X_test, y_test), METRICS)
+    # scores = trained_model.test((X_test, y_test), METRICS)
+    preds = model.predict(X_test)
 
-    # print results
-    print(f'Results for {model.name}')
-    for k, v in metrics.items():
-        print(f'\t{k}:\t{v}')
+    # get scores
+    scores = {}
+    print(f'Results for {model_name}')
+    for key, value in METRICS.items():
+        s = value(y_test, preds)
+        scores[key] = s
+        print(f'\t{key}:\t{s}')
 
-    # create dict for saving model and relative performance metrics
+    # create dict for saving model and relative performance scores
     model_dict = {
-        'name':   model.name,
-        'model':        trained_model,
-        'metrics':      metrics
+        'name':        model_name,
+        'model':       model,
+        'scores':      scores
     }
 
     # save model dict
-    output_file = output_dir / f'{model.name}Model.pkl'
+    output_file = output_dir / f'{model_name}Model.pkl'
     with open(output_file, 'wb') as file:
         pickle.dump(model_dict, file)
     if debug: print(f'Saved model dict to {output_file}')

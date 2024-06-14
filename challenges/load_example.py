@@ -10,12 +10,12 @@ def load():
         model_dict = pickle.load(file)
 
     print(model_dict)
-    model_name, model, metrics = model_dict['name'], model_dict['model'], model_dict['metrics']
+    model_name, model, scores = model_dict['name'], model_dict['model'], model_dict['scores']
 
     if debug:
         print(f'Loaded model {model_name}.')
         print(f'Results for {model_name}:')
-        for k, v in metrics.items():
+        for k, v in scores.items():
             print(f'\t{k}:\t{v}')
 
     # use loaded model

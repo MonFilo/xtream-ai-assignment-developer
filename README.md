@@ -115,7 +115,7 @@ python .\challenge\load_example.py .\data\saved_models\LinearRegressionModel.pkl
 This will load the trained model in-code (it can be modified to actually use the model further), and it will print the saved testing results.
 
 #### Hyper-parameter optimization
-If you want to find the best hyper-parameters for a specific model, you need to define the dictionary of parameters in config.py (if not already there), and then run tune_hyper.pr from the terminal using:
+If you want to find the best hyper-parameters for a specific model, you need to define the dictionary of parameters in config.py (if not already there), and then run hyper_optim.pr from the terminal using:
 ```console
 ```
 
