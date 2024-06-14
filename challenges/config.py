@@ -16,18 +16,20 @@ METRICS = {
 }
 
 # Models
-# list of supported models, their dataprep functions, and the hyper-parameters to optimze
+# list of supported models, their dataprep functions, whether to enable log transformation, and the hyper-parameters to optimze
 #   (defined below)
 ARGS_DICT = {
         'linear':                   # command line arg
             [LinearRegression(),    # model  
              dataprep_linear,       # dataprep function
+             True,                 # log transformation
              None                   # hyperparameters to optimize
              ],
         
         'ridge':                    # command line arg
             [Ridge(),               # model
              dataprep_ridge,        # dataprep function
+             True,                 # log transformation
              {                      # hyperparameters to optimize
                  'alpha': lambda trial: trial.suggest_categorical('alpha', [0.1, 0.3, 0.5, 0.7, 1.0, 2, 4, 8, 16, 32])
              }],
@@ -35,6 +37,7 @@ ARGS_DICT = {
         'lasso':                    # command line arg
             [Lasso(),               # model
              dataprep_lasso,        # dataprep function
+             False,                 # log transformation
              {                      # hyperparameters to optimize
                  'alpha': lambda trial: trial.suggest_categorical('alpha', [0.1, 0.3, 0.5, 0.7, 1.0, 2, 4, 8, 16, 32])
              }],
@@ -43,6 +46,7 @@ ARGS_DICT = {
             [XGBRegressor(enable_categorical = True,    # model
                            random_state = SEED),  
              dataprep_xgboost,                          # dataprep function
+             False,                                     # log transformation
              {                                          # hyperparameters to optimize
                  'lambda': lambda trial: trial.suggest_float('lambda', 1e-8, 1.0, log=True),
                  'alpha': lambda trial: trial.suggest_float('alpha', 1e-8, 1.0, log=True),

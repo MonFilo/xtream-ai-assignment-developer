@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 import pickle
 from argparse import ArgumentParser
+import numpy as np
 
 from config import *
 from data import load_data
@@ -9,7 +10,7 @@ from data import load_data
 def main():
     # parse arguments
     input_file, output_dir, model_dict, debug = _parse_args()
-    model, dataprep_f, _ = model_dict
+    model, dataprep_f, log_transform, _ = model_dict
     model_name = model.__class__.__name__
 
     # load data
@@ -18,13 +19,12 @@ def main():
     X_train, X_test, y_train, y_test = dataprep_f(data, train_size = TRAIN_SPLIT, random_state = SEED)
 
     # train model
-    # trained_model = model.train((X_train, y_train))
     model.fit(X_train, y_train)
 
     # test model
-    # scores = trained_model.test((X_test, y_test), METRICS)
     preds = model.predict(X_test)
-
+    if log_transform: preds = np.exp(preds)
+    
     # get scores
     scores = {}
     print(f'Results for {model_name}')

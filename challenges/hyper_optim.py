@@ -8,45 +8,31 @@ from config import *
 from data import load_data
 
 from xgboost import XGBRegressor
-from sklearn.metrics import mean_squared_error
-
 
 def main():
     # parse arguments
     input_file, output_dir, model_dict, debug = _parse_args()
-    base_model, dataprep_f, params = model_dict
+    model, dataprep_f, log_transform, params = model_dict
+    model_name = model.__class__.__name__
 
     def objective(trial: optuna.trial.Trial) -> float:
         # Load the hyperparameters for xgboost
         model_params = {key: value(trial) if callable(value) else value for key, value in params.items()}
 
-        param = {
-        'lambda': trial.suggest_float('lambda', 1e-8, 1.0, log=True),
-        'alpha': trial.suggest_float('alpha', 1e-8, 1.0, log=True),
-        'colsample_bytree': trial.suggest_categorical('colsample_bytree', [0.3, 0.4, 0.5, 0.7]),
-        'subsample': trial.suggest_categorical('subsample', [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]),
-        'learning_rate': trial.suggest_float('learning_rate', 1e-8, 1.0, log=True),
-        'n_estimators': trial.suggest_int('n_estimators', 100, 1000),
-        'max_depth': trial.suggest_int('max_depth', 3, 9),
-        'random_state': 42,
-        'min_child_weight': trial.suggest_int('min_child_weight', 1, 10),
-        'enable_categorical': True
-        }
-
-        model = XGBRegressor(**param)
+        model = XGBRegressor(**model_params)
 
         # load data
         data = load_data(input_file, debug = False)
         X_train, X_val, y_train, y_val = dataprep_f(data, train_size = TRAIN_SPLIT, random_state = SEED)
 
         # train model
-        # trained_model = model.train((X_train, y_train))
         model.fit(X_train, y_train)
 
-        # test model and return mae
-        # scores = trained_model.test((X_val, y_val), METRICS)
-        # mae = scores['mae']
+        # make prediction
         preds = model.predict(X_val)
+        if log_transform: preds = np.exp(preds)
+
+        # compute and return mae
         mae = mean_absolute_error(y_val, preds)
         return mae
 
@@ -54,21 +40,30 @@ def main():
     study.optimize(objective, n_trials=100)
     print("Best hyperparameters: ", study.best_params)
 
-    model = RegressionModel(base_model(**study.best_params))
+    # define model with best hyper-parameters
+    model = XGBRegressor(**study.best_params)
+    # load data
     data = load_data(input_file, debug = False)
     X_train, X_test, y_train, y_test = dataprep_f(data, train_size = TRAIN_SPLIT, random_state = SEED)
-    trained_model = model.train((X_train, y_train))
-    scores = trained_model.test((X_test, y_test), METRICS)
-    print(f'Results for {model.name}')
-    for k, v in scores.items():
-        print(f'\t{k}:\t{v}')
+    # fit model
+    model.fit(X_train, y_train)
+    # make predicionts
+    preds = model.predict(X_test)
+    # get scores
+    scores = {}
+    print(f'Results for {model_name}')
+    for key, value in METRICS.items():
+        s = value(y_test, preds)
+        scores[key] = s
+        print(f'\t{key}:\t{s}')
 
     # create dict for saving model and relative performance metrics
     model_dict = {
-        'name':   model.name,
-        'model':        trained_model,
-        'scores':      scores
+        'name':     model_name,
+        'model':    model,
+        'scores':   scores
     }
+
     # save model dict
     output_file = output_dir / f'{model.name}Model.pkl'
     with open(output_file, 'wb') as file:
