@@ -6,7 +6,7 @@ def load_data(file_path:Path, debug:bool = False):
     """
     Reads the data in file_path and returns is as pandas dataframe.
 
-    NOTE: this only works for the provided 'diamonds' dataset.
+    NOTE: this only works for the provided 'diamonds.csv' dataset.
 
     Parameters:
         - file_path (pathlib.Path): file path to diamonds.csv
