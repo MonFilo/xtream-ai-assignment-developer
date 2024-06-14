@@ -10,8 +10,8 @@ from data import load_data
 def main():
     # parse arguments
     input_file, output_dir, model_dict, debug = _parse_args()
-    model, dataprep_f, log_transform, _ = model_dict
-    model_name = model.__class__.__name__
+    model_name, model, model_params, dataprep_f, log_transform, _ = model_dict
+    model = model(**model_params)
 
     # load data
     data = load_data(input_file, debug)
@@ -37,11 +37,12 @@ def main():
     model_dict = {
         'name':        model_name,
         'model':       model,
+        'hyperparams': model_params,
         'scores':      scores
     }
 
     # save model dict
-    output_file = output_dir / f'{model_name}Model.pkl'
+    output_file = output_dir / f"{model_name}{scores['mae']:.2f}$.pkl"
     with open(output_file, 'wb') as file:
         pickle.dump(model_dict, file)
     if debug: print(f'Saved model dict to {output_file}')
@@ -51,7 +52,7 @@ def _parse_args():
     parser = ArgumentParser(description = 'main file for challenge 1')
     parser.add_argument('input_file', type = str, help = 'file path to diamonds.csv dataset')
     parser.add_argument('output_dir', type = str, help = 'output directory to save model')
-    parser.add_argument('model', choices = list(ARGS_DICT.keys()), help = 'linear model to use')
+    parser.add_argument('model', choices = list(ARGS_DICT.keys()), help = 'regression model to use')
     parser.add_argument('--debug', action = 'store_true', help = 'enable debug mode')
     args = parser.parse_args()
 

@@ -67,37 +67,45 @@ Observability is key. Save every request and response made to the APIs to a **pr
 
 ---
 
-## How to run
+# How to run
 🦎 🦫
 
-### Challenge 1 - 2
-**NOTE**
-#### New Models
-If you want to add a new model to the pipeline, you will need to specify its data preparation pipeline in the file '\data\custom_dataprep.py', and also add it 'config.py' following the instructions in the file.
-#### New evaluation metrics
+## Challenge 1 - 2
+### New Models
+If you want to add a new model to the pipeline, you will need to specify:
+
+- model name
+- model parameters
+- custom datapreparation function (in \data\custom_dataprep.py)
+- whether to use log transform
+- model hyper-parameters for tuning with optuna
+
+All of this info can be found in config.py.
+
+### New evaluation metrics
 If you want to add new evaluation metrics, just drop them in the 'METRICS' dictionary in config.py, after importing them from the sklearn library.
 
-#### Fitting and Testing a model
+### Fitting and Testing a model
 You can train/fit a model and test it using train_test.py from the terminal with the following command:
 ```console
-python challenge.py input_file output_dir {linear,ridge,lasso, xgboost} [--debug] [-h]
+python train_test.py input_file output_dir {linear,ridge,lasso,xgboost} [--debug] [-h]
 ```
 
 where:
 - input_file is the location of diamonds.csv (yes this only works for that specific file)
 - output_dir is the directory used to saved the models (create the dir beforehand or a nasty error will appear!)
-- {linear,ridge,lasso} are the linear model types (choose one of them)
+- {linear,ridge,lasso,xgboost} are the regresion model choices (new ones will be added automatically)
 - [--debug] is an optional parameter, to enable debug mode and get some extra prints
 - [-h] to get this help section in the terminal
 
-for example, we can train the linear model with 
+for example, we can train a linear model with 
 ```console
-python .\challenge\challenge1.py .\data\diamonds.csv .\data\saved_models\ linear --debug
+python .\challenges\train_test.py .\data\diamonds.csv .\data\saved_models\ linear --debug
 ```
-and it will be saved in the directory '\\saved_models\\'.
+and it will be saved in the directory '\\saved_models\\'. Performance metrics will also be printed and saved alongside the model.
 
-#### Loading a model
-You can also load a saved model to test it further or see the performance it obtained. This is done using pickle to load the model.
+### Loading a model
+You can also load a saved model to test it further or see the performance it obtained. This is done using pickle.
 
 There is an example of this in the file 'load_example.py', which can be called from the terminal using the following command:
 ```console
@@ -114,8 +122,22 @@ python .\challenge\load_example.py .\data\saved_models\LinearRegressionModel.pkl
 ```
 This will load the trained model in-code (it can be modified to actually use the model further), and it will print the saved testing results.
 
-#### Hyper-parameter optimization
-If you want to find the best hyper-parameters for a specific model, you need to define the dictionary of parameters in config.py (if not already there), and then run hyper_optim.pr from the terminal using:
+### Hyper-parameter optimization
+If you want to find the best hyper-parameters for a specific model, you need to define the dictionary of parameters in config.py (if not already there), and then run hyper_optim.py from the terminal using:
 ```console
+python hyper_optim.py input_file output_dir {linear,ridge,lasso,xgboost} [--n_trials N_TRIALS] [--debug] [-h]
 ```
 
+where:
+- input_file is the location of diamonds.csv (yes this only works for that specific file)
+- output_dir is the directory used to saved the models (create the dir beforehand or a nasty error will appear!)
+- {linear,ridge,lasso,xgboost} are the regresion model choices (new ones will be added automatically)
+- [--n_trials N_TRIALS] is an optional parameter that sets the max number of optuna trials to run (higher values means more time!)
+- [--debug] is an optional parameter, to enable debug mode and get some extra prints
+- [-h] to get this help section in the terminal
+
+for example, we can optimize the hyper-parameters of the xgboost model with 
+```console
+python .\challenges\hyper_optim.py .\data\diamonds.csv .\data\saved_models\ xgboost --n_trials 1000 --debug
+```
+and it will be saved in the directory '\\saved_models\\'. Performance metrics will also be printed and saved alongside the model.

@@ -8,19 +8,25 @@ def load():
     with open(model_to_load, 'rb') as file:
         model_dict = pickle.load(file)
 
-    print(model_dict)
-    model_name, model, scores = model_dict['name'], model_dict['model'], model_dict['scores']
+    model_name = model_dict['name']
+    model = model_dict['model']
+    hyperparams = model_dict['hyperparams']
+    scores = model_dict['scores']
 
-    if debug:
-        print(f'Loaded model {model_name}.')
-        print(f'Results for {model_name}:')
-        for k, v in scores.items():
+    print(f'Loaded {model_name} model, with ', end = '')
+    if hyperparams:
+        print(f'hyper-parameters:')
+        for k, v in hyperparams.items():
             print(f'\t{k}:\t{v}')
+    else:
+        print(f'default hyperparameters')
+    print(f'Results::')
+    for k, v in scores.items():
+        print(f'\t{k}:\t{v}')
 
     # use loaded model
     model = ...
 
-    
 def _parse_args():
     # argument parser
     parser = ArgumentParser(description = 'example file to load a saved model')

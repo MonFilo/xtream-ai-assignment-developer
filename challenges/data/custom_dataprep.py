@@ -68,7 +68,4 @@ def dataprep_xgboost(data, **kwargs):
     # split dataframe training and testing
     X_train, X_test, y_train, y_test  = train_test_split(X, y, **kwargs)
 
-    # use log transformation to prevent negative predictions
-    y_train = np.log(y_train)
-
     return X_train, X_test, y_train, y_test
