@@ -1,6 +1,5 @@
 import pickle
 from argparse import ArgumentParser
-from pathlib import Path
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.metrics import r2_score, mean_absolute_error
 
@@ -64,6 +63,3 @@ def _parse_args():
     }
 
     return args.input_file, args.output_dir, models_dict[args.model], args.debug
-
-if __name__ == '__main__':
-    main()
