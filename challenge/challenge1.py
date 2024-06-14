@@ -1,3 +1,4 @@
+import pickle
 from pathlib import Path
 from sklearn.linear_model import LinearRegression, Ridge, Lasso
 from sklearn.metrics import r2_score, mean_absolute_error
@@ -31,3 +32,13 @@ scores = trained_model.test((X_test, y_test), evals)
 print(f'Results for {model.name}')
 for k, v in scores.items():
     print(f'{k}:\t{v}')
+
+# create single dict for saving model and its performance metrics
+model_dict = {
+    'model':    trained_model,
+    'metrics':  scores
+}
+
+# save model dict
+with open(parent_dir / 'data' / 'saved_models' / f'{model.name}.pkl', 'wb') as file:
+    pickle.dump(model_dict, file)
